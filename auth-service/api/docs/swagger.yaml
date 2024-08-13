@@ -1,0 +1,457 @@
+definitions:
+  auth.GetAllUsersRes:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/auth.UserRes'
+        type: array
+    type: object
+  auth.TokenRes:
+    properties:
+      exp_at:
+        type: string
+      token:
+        type: string
+    type: object
+  auth.UserCreateReq:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+    type: object
+  auth.UserLoginReq:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.UserRes:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+    type: object
+  auth.UsersForgotPassword:
+    properties:
+      email:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /admin/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new admin
+      parameters:
+      - description: User registration request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserCreateReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Admin registered
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Register a new admin
+      tags:
+      - admin
+  /all/users:
+    get:
+      consumes:
+      - application/json
+      description: Get the profile of the authenticated users
+      parameters:
+      - description: Role
+        in: query
+        name: role
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.GetAllUsersRes'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get users
+      tags:
+      - user
+  /change-password:
+    put:
+      consumes:
+      - application/json
+      description: ChangePassword
+      parameters:
+      - description: CurrentPassword
+        in: query
+        name: current_password
+        type: string
+      - description: NewPassword
+        in: query
+        name: new_password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Changed password
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Password incorrect
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: ChangePassword
+      tags:
+      - user
+  /forgot-password:
+    post:
+      consumes:
+      - application/json
+      description: Send a reset password code to the user's email
+      parameters:
+      - description: Email data
+        in: body
+        name: email
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UsersForgotPassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Reset password code sent successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Send a reset password code to the user's email
+      tags:
+      - user
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user with email and password
+      parameters:
+      - description: User login credentials
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserLoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: JWT tokens
+          schema:
+            $ref: '#/definitions/auth.TokenRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "401":
+          description: Invalid email or password
+          schema:
+            type: string
+      summary: Login a user
+      tags:
+      - auth
+  /profile:
+    get:
+      consumes:
+      - application/json
+      description: Get the profile of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.UserRes'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - user
+  /profile/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the profil of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile deleted
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete user profile
+      tags:
+      - user
+  /profile/update:
+    put:
+      consumes:
+      - application/json
+      description: Update the profil of the authenticated user
+      parameters:
+      - description: FirstName
+        in: query
+        name: first_name
+        type: string
+      - description: LastName
+        in: query
+        name: last_name
+        type: string
+      - description: Email
+        in: query
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile updated
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User settings not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - user
+  /provider/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new courier
+      parameters:
+      - description: User registration request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserCreateReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Courier registered
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Register a new courier
+      tags:
+      - courier
+  /refresh-token:
+    get:
+      consumes:
+      - application/json
+      description: Get the token of the authenticated user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/auth.TokenRes'
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: User not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get token
+      tags:
+      - user
+  /reset-password:
+    post:
+      consumes:
+      - application/json
+      description: Reset user password with the provided reset code and new password
+      parameters:
+      - description: ResetToken
+        in: query
+        name: reset_token
+        type: string
+      - description: NewPassword
+        in: query
+        name: new_password
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Password reset successfully
+          schema:
+            type: string
+        "400":
+          description: Invalid input
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Reset user password
+      tags:
+      - user
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User registration request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/auth.UserCreateReq'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User registered
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      summary: Register a new user
+      tags:
+      - user
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -1,0 +1,3 @@
+[submodule "booking-service/carwash-protos"]
+	path = booking-service/carwash-protos
+	url = git@github.com:axadjonovsardorbek/carwash-protos.git
