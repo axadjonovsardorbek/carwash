@@ -25,8 +25,7 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status') THEN
         CREATE TYPE payment_status AS ENUM(
             'pending', 
-            'refunded',
-            'failed',
+            'cancelled',
             'completed'
         );
     END IF;               
@@ -56,13 +55,24 @@ CREATE TABLE IF NOT EXISTS services (
     deleted_at BIGINT DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS reviews (
+CREATE TABLE IF NOT EXISTS providers (
     id UUID PRIMARY KEY,
-    booking_id UUID REFERENCES bookings(id) UNIQUE NOT NULL,
-    user_id UUID REFERENCES users(id) NOT NULL,
-    provider_id UUID REFERENCES providers(id) NOT NULL,
-    rating INTEGER NOT NULL,
-    comment VARCHAR(255) NOT NULL,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    company_name VARCHAR(128) NOT NULL,
+    description VARCHAR(255) NOT NULL,
+    availability VARCHAR(64) NOT NULL DEFAULT '09:00-21:00',
+    average_rating FLOAT DEFAULT 0.0,
+    location VARCHAR(128) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at BIGINT DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS provider_services (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    service_id UUID REFERENCES services(id) ON DELETE CASCADE,
+    provider_id UUID REFERENCES providers(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deleted_at BIGINT DEFAULT 0
@@ -81,24 +91,14 @@ CREATE TABLE IF NOT EXISTS bookings (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deleted_at BIGINT DEFAULT 0
 );
-CREATE TABLE IF NOT EXISTS providers(
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    company_name VARCHAR(128) NOT NULL,
-    description VARCHAR(255) NOT NULL,
-    availability VARCHAR(64) NOT NULL DEFAULT '09:00-21:00',
-    average_rating FLOAT DEFAULT 0,
-    location VARCHAR(128) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    deleted_at BIGINT DEFAULT 0
-);
 
-CREATE TABLE IF NOT EXISTS provider_services (
+CREATE TABLE IF NOT EXISTS reviews (
     id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    service_id UUID REFERENCES services(id) ON DELETE CASCADE,
-    provider_id UUID REFERENCES providers(id) ON DELETE CASCADE,
+    booking_id UUID REFERENCES bookings(id) UNIQUE NOT NULL,
+    user_id UUID REFERENCES users(id) NOT NULL,
+    provider_id UUID REFERENCES providers(id) NOT NULL,
+    rating INTEGER NOT NULL,
+    comment VARCHAR(255) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deleted_at BIGINT DEFAULT 0
@@ -106,11 +106,11 @@ CREATE TABLE IF NOT EXISTS provider_services (
 
 CREATE TABLE IF NOT EXISTS payments (
     id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE UNIQUE,
     booking_id UUID REFERENCES bookings(id) ON DELETE CASCADE,
     amount BIGINT NOT NULL,
     status payment_status NOT NULL DEFAULT 'pending',
-    payment_method payment_type NOT NULL 'cash',
+    payment_method payment_type NOT NULL DEFAULT 'cash',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deleted_at BIGINT DEFAULT 0
@@ -118,3 +118,9 @@ CREATE TABLE IF NOT EXISTS payments (
 
 ALTER TABLE users
 ADD CONSTRAINT users_unique_tg UNIQUE (email, phone, deleted_at);
+
+ALTER TABLE provider_services
+ADD CONSTRAINT providers_unique_tg UNIQUE (service_id, provider_id, deleted_at);
+
+ALTER TABLE providers
+ADD CONSTRAINT provider_users_unique_tg UNIQUE (user_id, deleted_at);

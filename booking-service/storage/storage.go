@@ -10,6 +10,7 @@ type ProviderI interface {
 	GetAll(*bp.ProviderGetAllReq) (*bp.ProviderGetAllRes, error)
 	Update(*bp.ProviderUpdateReq) (*bp.Void, error)
 	Delete(*bp.ById) (*bp.Void, error)
+	GetProviderId(*bp.ById) (*bp.ById, error)
 }
 
 type ServiceI interface {
@@ -34,6 +35,8 @@ type PaymentI interface {
 	GetAll(*bp.PaymentGetAllReq) (*bp.PaymentGetAllRes, error)
 	Update(*bp.PaymentUpdateReq) (*bp.Void, error)
 	Delete(*bp.ById) (*bp.Void, error)
+	GetBookingId(*bp.ById) (*bp.ById, error)
+	GetBookingAmount(*bp.ById) (*bp.GetAmountRes, error)
 }
 
 type ReviewI interface {
@@ -42,6 +45,7 @@ type ReviewI interface {
 	GetAll(*bp.ReviewGetAllReq) (*bp.ReviewGetAllRes, error)
 	Update(*bp.ReviewUpdateReq) (*bp.Void, error)
 	Delete(*bp.ById) (*bp.Void, error)
+	GetProviderRating(*bp.ById) (*bp.GetProviderRatingRes, error)
 }
 
 type ProviderServiceI interface {
@@ -49,4 +53,11 @@ type ProviderServiceI interface {
 	GetById(*bp.ById) (*bp.ProviderServiceGetByIdRes, error)
 	GetAll(*bp.ProviderServiceGetAllReq) (*bp.ProviderServiceGetAllRes, error)
 	Delete(*bp.ById) (*bp.Void, error)
+}
+
+type NotificationI interface {
+	Create(*bp.NotificationRes) (*bp.Void, error)
+	GetById(*bp.ById) (*bp.NotificationGetByIdRes, error)
+	GetAll(*bp.NotificationGetAllReq) (*bp.NotificationGetAllRes, error)
+	Update(*bp.NotificationUpdateReq) (*bp.Void, error)
 }

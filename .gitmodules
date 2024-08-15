@@ -5,3 +5,6 @@
 [submodule "auth-service/carwash-protos"]
 	path = auth-service/carwash-protos
 	url = git@github.com:axadjonovsardorbek/carwash-protos.git
+[submodule "api-gateway/carwash-protos"]
+	path = api-gateway/carwash-protos
+	url = git@github.com:axadjonovsardorbek/carwash-protos.git

@@ -30,3 +30,7 @@ func (s *ReviewService) Update(ctx context.Context, req *bp.ReviewUpdateReq) (*b
 func (s *ReviewService) Delete(ctx context.Context, req *bp.ById) (*bp.Void, error) {
 	return s.storage.ReviewS.Delete(req)
 }
+
+func (s *ReviewService) GetProviderRating(ctx context.Context, req *bp.ById) (*bp.GetProviderRatingRes, error){
+	return s.storage.ReviewS.GetProviderRating(req)
+}

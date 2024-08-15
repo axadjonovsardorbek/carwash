@@ -179,7 +179,7 @@ func (r *ReviewRepo) Update(req *bp.ReviewUpdateReq) (*bp.Void, error) {
 		args = append(args, req.Comment)
 	}
 	if req.Rating > 0 {
-		conditions = append(conditions, " price = $"+strconv.Itoa(len(args)+1))
+		conditions = append(conditions, " rating = $"+strconv.Itoa(len(args)+1))
 		args = append(args, req.Rating)
 	}
 
@@ -189,9 +189,9 @@ func (r *ReviewRepo) Update(req *bp.ReviewUpdateReq) (*bp.Void, error) {
 
 	conditions = append(conditions, " updated_at = now()")
 	query += strings.Join(conditions, ", ")
-	query += " WHERE id = $" + strconv.Itoa(len(args)+1) + " AND deleted_at = 0 "
+	query += " WHERE id = $" + strconv.Itoa(len(args)+1) + " AND deleted_at = 0 AND user_id = $" + strconv.Itoa(len(args)+2)
 
-	args = append(args, req.Id)
+	args = append(args, req.Id, req.UserId)
 
 	_, err := r.db.Exec(query, args...)
 
@@ -233,4 +233,37 @@ func (r *ReviewRepo) Delete(req *bp.ById) (*bp.Void, error) {
 	log.Println("Successfully deleted review")
 
 	return nil, nil
+}
+
+func (r *ReviewRepo) GetProviderRating(req *bp.ById) (*bp.GetProviderRatingRes, error){
+	query := `
+	SELECT
+		SUM(rating),
+		COUNT(rating)
+	FROM
+		reviews
+	WHERE
+		provider_id = $1
+	AND 
+		deleted_at = 0
+	`
+
+	var rating int64
+	var count int64
+
+	row := r.db.QueryRow(query, req.Id)
+
+	err := row.Scan(
+		&rating,
+		&count,
+	)
+
+	if err != nil {
+		log.Println("Error while getting rating: ", err)
+		return nil, err
+	}
+
+	log.Println("Successfully got rating")
+
+	return &bp.GetProviderRatingRes{Rating: rating, Count: count}, nil
 }

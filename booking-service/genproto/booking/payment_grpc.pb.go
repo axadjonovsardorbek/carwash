@@ -19,11 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	PaymentService_Create_FullMethodName  = "/booking.PaymentService/Create"
-	PaymentService_GetById_FullMethodName = "/booking.PaymentService/GetById"
-	PaymentService_GetAll_FullMethodName  = "/booking.PaymentService/GetAll"
-	PaymentService_Update_FullMethodName  = "/booking.PaymentService/Update"
-	PaymentService_Delete_FullMethodName  = "/booking.PaymentService/Delete"
+	PaymentService_Create_FullMethodName           = "/booking.PaymentService/Create"
+	PaymentService_GetById_FullMethodName          = "/booking.PaymentService/GetById"
+	PaymentService_GetAll_FullMethodName           = "/booking.PaymentService/GetAll"
+	PaymentService_Update_FullMethodName           = "/booking.PaymentService/Update"
+	PaymentService_Delete_FullMethodName           = "/booking.PaymentService/Delete"
+	PaymentService_GetBookingId_FullMethodName     = "/booking.PaymentService/GetBookingId"
+	PaymentService_GetBookingAmount_FullMethodName = "/booking.PaymentService/GetBookingAmount"
 )
 
 // PaymentServiceClient is the client API for PaymentService service.
@@ -35,6 +37,8 @@ type PaymentServiceClient interface {
 	GetAll(ctx context.Context, in *PaymentGetAllReq, opts ...grpc.CallOption) (*PaymentGetAllRes, error)
 	Update(ctx context.Context, in *PaymentUpdateReq, opts ...grpc.CallOption) (*Void, error)
 	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error)
+	GetBookingId(ctx context.Context, in *ById, opts ...grpc.CallOption) (*ById, error)
+	GetBookingAmount(ctx context.Context, in *ById, opts ...grpc.CallOption) (*GetAmountRes, error)
 }
 
 type paymentServiceClient struct {
@@ -90,6 +94,24 @@ func (c *paymentServiceClient) Delete(ctx context.Context, in *ById, opts ...grp
 	return out, nil
 }
 
+func (c *paymentServiceClient) GetBookingId(ctx context.Context, in *ById, opts ...grpc.CallOption) (*ById, error) {
+	out := new(ById)
+	err := c.cc.Invoke(ctx, PaymentService_GetBookingId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *paymentServiceClient) GetBookingAmount(ctx context.Context, in *ById, opts ...grpc.CallOption) (*GetAmountRes, error) {
+	out := new(GetAmountRes)
+	err := c.cc.Invoke(ctx, PaymentService_GetBookingAmount_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PaymentServiceServer is the server API for PaymentService service.
 // All implementations must embed UnimplementedPaymentServiceServer
 // for forward compatibility
@@ -99,6 +121,8 @@ type PaymentServiceServer interface {
 	GetAll(context.Context, *PaymentGetAllReq) (*PaymentGetAllRes, error)
 	Update(context.Context, *PaymentUpdateReq) (*Void, error)
 	Delete(context.Context, *ById) (*Void, error)
+	GetBookingId(context.Context, *ById) (*ById, error)
+	GetBookingAmount(context.Context, *ById) (*GetAmountRes, error)
 	mustEmbedUnimplementedPaymentServiceServer()
 }
 
@@ -120,6 +144,12 @@ func (UnimplementedPaymentServiceServer) Update(context.Context, *PaymentUpdateR
 }
 func (UnimplementedPaymentServiceServer) Delete(context.Context, *ById) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedPaymentServiceServer) GetBookingId(context.Context, *ById) (*ById, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBookingId not implemented")
+}
+func (UnimplementedPaymentServiceServer) GetBookingAmount(context.Context, *ById) (*GetAmountRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBookingAmount not implemented")
 }
 func (UnimplementedPaymentServiceServer) mustEmbedUnimplementedPaymentServiceServer() {}
 
@@ -224,6 +254,42 @@ func _PaymentService_Delete_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PaymentService_GetBookingId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ById)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).GetBookingId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_GetBookingId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).GetBookingId(ctx, req.(*ById))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PaymentService_GetBookingAmount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ById)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PaymentServiceServer).GetBookingAmount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PaymentService_GetBookingAmount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PaymentServiceServer).GetBookingAmount(ctx, req.(*ById))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PaymentService_ServiceDesc is the grpc.ServiceDesc for PaymentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +316,14 @@ var PaymentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _PaymentService_Delete_Handler,
+		},
+		{
+			MethodName: "GetBookingId",
+			Handler:    _PaymentService_GetBookingId_Handler,
+		},
+		{
+			MethodName: "GetBookingAmount",
+			Handler:    _PaymentService_GetBookingAmount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

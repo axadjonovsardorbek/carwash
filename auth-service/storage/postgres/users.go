@@ -5,6 +5,7 @@ import (
 	"auth/verification"
 	"context"
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -113,9 +114,11 @@ func (u *UsersRepo) Login(req *ap.UserLoginReq) (*ap.TokenRes, error) {
 }
 
 func (u *UsersRepo) Profile(req *ap.ById) (*ap.UserRes, error) {
-	user := ap.UserRes{}
+	userData, err := u.rdb.Get(context.Background(), req.Id).Result()
+	if err == redis.Nil {
+		user := ap.UserRes{}
 
-	query := `
+		query := `
 	SELECT 
 		id,
 		first_name,
@@ -129,24 +132,39 @@ func (u *UsersRepo) Profile(req *ap.ById) (*ap.UserRes, error) {
 	AND 
 		deleted_at = 0
 	`
-	row := u.db.QueryRow(query, req.Id)
+		row := u.db.QueryRow(query, req.Id)
 
-	err := row.Scan(
-		&user.Id,
-		&user.FirstName,
-		&user.LastName,
-		&user.Role,
-		&user.Phone,
-	)
+		err := row.Scan(
+			&user.Id,
+			&user.FirstName,
+			&user.LastName,
+			&user.Role,
+			&user.Phone,
+		)
 
-	if err != nil {
-		log.Println("Error while getting user profile: ", err)
+		if err != nil {
+			log.Println("Error while getting user profile: ", err)
+			return nil, err
+		}
+
+		fmt.Println("Successfully got profile")
+
+		return &user, nil
+		
+	} else if err != nil {
+		log.Printf("Redis get error: %v", err)
 		return nil, err
 	}
 
-	fmt.Println("Successfully got profile")
+	user := &ap.UserRes{}
 
-	return &user, nil
+	err = json.Unmarshal([]byte(userData), user)
+	if err != nil {
+		log.Printf("JSON unmarshalling error: %v", err)
+		return nil, err
+	}
+
+	return user, nil
 }
 
 func (u *UsersRepo) UpdateProfile(req *ap.UserUpdateReq) (*ap.Void, error) {

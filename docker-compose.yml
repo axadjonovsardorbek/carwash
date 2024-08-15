@@ -1,0 +1,128 @@
+version: '3.8'
+
+services:
+  migrate:
+    image: migrate/migrate
+    networks: 
+      - carwash
+    volumes:
+      - ./auth-service/migrations:/migrations
+    command: [ "-path", "/migrations", "-database", "postgres-carwash://postgres:1111@postgres-carwash:5432/carwash?sslmode=disable", "up" ]
+    depends_on:
+      - postgres-carwash
+
+  postgres-carwash:
+    container_name: postgres-carwash
+    image: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
+      PGDATA: /data/postgres
+      POSTGRES_DB: carwash
+    volumes:
+     - carwash_postgres_data:/var/lib/postgres/data
+    ports:
+      - "5432:5332"
+    networks:
+      - carwash
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  
+  mongo-carwash:
+    image: mongo:latest
+    container_name: mongo-carwash
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: sardorbek
+      MONGO_INITDB_ROOT_PASSWORD: 1111
+    ports:
+      - "27017:27017"
+    volumes:
+      - carwash_mongo_data:/data/db
+    networks:
+      - carwash  
+  
+  booking-service:
+    container_name: booking-service
+    build: ./booking-service
+    depends_on:
+      - postgres-carwash
+      - mongo-carwash
+    ports:
+      - "50010:50010"
+    networks:
+      - carwash     
+    
+  carwash-gateway:
+    container_name: carwash-gateway
+    build: ./api-gateway
+    depends_on:
+      - postgres-carwash
+      - booking-service
+    ports:
+      - "8002:8002"
+    networks:
+      - carwash
+
+  carwash-auth:
+    container_name: carwash-auth
+    build: ./auth-service
+    depends_on: 
+      - postgres-carwash
+      - booking-service
+      - carwash-gateway
+      - kafka-carwash
+      - redis-carwash
+      - zookeeper-carwash
+    ports:
+      - "8001:8001"
+    networks:
+      - carwash
+
+
+  zookeeper-carwash:
+    image: confluentinc/cp-zookeeper:7.4.4
+    container_name: zookeeper-carwash
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - carwash
+ 
+  kafka-carwash:
+    image: confluentinc/cp-kafka:7.4.4
+    container_name: kafka-carwash
+    depends_on:
+      - zookeeper-carwash
+    ports:
+      - 29092:29092
+    networks:
+      - carwash
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  redis-carwash:
+    image: redis:latest
+    container_name: redis-carwash
+    ports:
+      - "6379:6379"
+    networks:
+      - carwash
+    
+networks:
+  carwash:
+    driver: bridge
+
+volumes:
+  carwash_postgres_data: 
+  carwash_mongo_data: 

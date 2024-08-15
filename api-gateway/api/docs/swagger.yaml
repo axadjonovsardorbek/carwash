@@ -1,0 +1,1262 @@
+definitions:
+  booking.BookingCreateReq:
+    properties:
+      location:
+        type: string
+      provider_id:
+        type: string
+      scheduled_time:
+        type: string
+      service_id:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  booking.BookingGetAllRes:
+    properties:
+      bookings:
+        items:
+          $ref: '#/definitions/booking.BookingRes'
+        type: array
+    type: object
+  booking.BookingGetByIdRes:
+    properties:
+      booking:
+        $ref: '#/definitions/booking.BookingRes'
+    type: object
+  booking.BookingRes:
+    properties:
+      id:
+        type: string
+      location:
+        type: string
+      provider_id:
+        type: string
+      scheduled_time:
+        type: string
+      service_id:
+        type: string
+      status:
+        type: string
+      total_price:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  booking.NotificationGetAllRes:
+    properties:
+      notification:
+        items:
+          $ref: '#/definitions/booking.NotificationRes'
+        type: array
+    type: object
+  booking.NotificationGetByIdRes:
+    properties:
+      notification:
+        $ref: '#/definitions/booking.NotificationRes'
+    type: object
+  booking.NotificationRes:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      is_read:
+        type: string
+      message:
+        type: string
+      user_id:
+        type: string
+    type: object
+  booking.PaymentCreateReq:
+    properties:
+      amount:
+        type: integer
+      booking_id:
+        type: string
+      payment_method:
+        type: string
+      status:
+        type: string
+      user_id:
+        type: string
+    type: object
+  booking.PaymentGetAllRes:
+    properties:
+      payments:
+        items:
+          $ref: '#/definitions/booking.PaymentRes'
+        type: array
+    type: object
+  booking.PaymentGetByIdRes:
+    properties:
+      payment:
+        $ref: '#/definitions/booking.PaymentRes'
+    type: object
+  booking.PaymentRes:
+    properties:
+      amount:
+        type: integer
+      booking_id:
+        type: string
+      id:
+        type: string
+      payment_method:
+        type: string
+      status:
+        type: string
+      user_id:
+        type: string
+    type: object
+  booking.ProviderCreateReq:
+    properties:
+      availability:
+        type: string
+      average_rating:
+        type: number
+      company_name:
+        type: string
+      description:
+        type: string
+      location:
+        type: string
+      user_id:
+        type: string
+    type: object
+  booking.ProviderGetAllRes:
+    properties:
+      providers:
+        items:
+          $ref: '#/definitions/booking.ProviderRes'
+        type: array
+    type: object
+  booking.ProviderGetByIdRes:
+    properties:
+      provider:
+        $ref: '#/definitions/booking.ProviderRes'
+    type: object
+  booking.ProviderRes:
+    properties:
+      availability:
+        type: string
+      average_rating:
+        type: number
+      company_name:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      location:
+        type: string
+      user_id:
+        type: string
+    type: object
+  booking.ProviderServiceGetAllRes:
+    properties:
+      provider_services:
+        items:
+          $ref: '#/definitions/booking.ProviderServiceRes'
+        type: array
+    type: object
+  booking.ProviderServiceGetByIdRes:
+    properties:
+      provider_service:
+        $ref: '#/definitions/booking.ProviderServiceRes'
+    type: object
+  booking.ProviderServiceRes:
+    properties:
+      id:
+        type: string
+      provider_id:
+        type: string
+      service_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  booking.ReviewCreateReq:
+    properties:
+      booking_id:
+        type: string
+      comment:
+        type: string
+      provider_id:
+        type: string
+      rating:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  booking.ReviewGetAllRes:
+    properties:
+      reviews:
+        items:
+          $ref: '#/definitions/booking.ReviewRes'
+        type: array
+    type: object
+  booking.ReviewGetByIdRes:
+    properties:
+      review:
+        $ref: '#/definitions/booking.ReviewRes'
+    type: object
+  booking.ReviewRes:
+    properties:
+      booking_id:
+        type: string
+      comment:
+        type: string
+      id:
+        type: string
+      provider_id:
+        type: string
+      rating:
+        type: integer
+      user_id:
+        type: string
+    type: object
+  booking.ServiceCreateReq:
+    properties:
+      description:
+        type: string
+      duration:
+        type: integer
+      name:
+        type: string
+      price:
+        type: integer
+    type: object
+  booking.ServiceGetAllRes:
+    properties:
+      services:
+        items:
+          $ref: '#/definitions/booking.ServiceRes'
+        type: array
+    type: object
+  booking.ServiceGetByIdRes:
+    properties:
+      service:
+        $ref: '#/definitions/booking.ServiceRes'
+    type: object
+  booking.ServiceRes:
+    properties:
+      description:
+        type: string
+      duration:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+    type: object
+info:
+  contact: {}
+paths:
+  /booking:
+    post:
+      consumes:
+      - application/json
+      description: Create a new booking
+      parameters:
+      - description: Booking data
+        in: body
+        name: booking
+        required: true
+        schema:
+          $ref: '#/definitions/booking.BookingCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create booking
+      tags:
+      - booking
+  /booking/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a booking by ID
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid booking ID
+          schema:
+            type: string
+        "404":
+          description: Booking not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete booking
+      tags:
+      - booking
+    get:
+      consumes:
+      - application/json
+      description: Get a booking
+      parameters:
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.BookingGetByIdRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get booking
+      tags:
+      - booking
+    put:
+      consumes:
+      - application/json
+      description: Update an existing booking
+      parameters:
+      - description: Id
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Booking updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Booking not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update booking
+      tags:
+      - booking
+  /booking/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all booking
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.BookingGetAllRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all booking
+      tags:
+      - booking
+  /notification/{id}/read:
+    get:
+      consumes:
+      - application/json
+      description: Get a notification
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.NotificationGetByIdRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get notification
+      tags:
+      - notification
+  /notification/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all notification
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: IsRead
+        in: query
+        name: is_read
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.NotificationGetAllRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all notification
+      tags:
+      - notification
+  /payment:
+    post:
+      consumes:
+      - application/json
+      description: Create a new payment
+      parameters:
+      - description: Payment data
+        in: body
+        name: payment
+        required: true
+        schema:
+          $ref: '#/definitions/booking.PaymentCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payment created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create payment
+      tags:
+      - payment
+  /payment/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a payment by ID
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payment cancelled
+          schema:
+            type: string
+        "400":
+          description: Invalid payment ID
+          schema:
+            type: string
+        "404":
+          description: Payment not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete payment
+      tags:
+      - payment
+    get:
+      consumes:
+      - application/json
+      description: Get a payment
+      parameters:
+      - description: Payment ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.PaymentGetByIdRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get payment
+      tags:
+      - payment
+    put:
+      consumes:
+      - application/json
+      description: Update an existing payment
+      parameters:
+      - description: Id
+        in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Payment updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Payment not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update payment
+      tags:
+      - payment
+  /payment/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all payment
+      parameters:
+      - description: Status
+        in: query
+        name: status
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.PaymentGetAllRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all payment
+      tags:
+      - payment
+  /provider:
+    post:
+      consumes:
+      - application/json
+      description: Create a new provider
+      parameters:
+      - description: Provider data
+        in: body
+        name: provider
+        required: true
+        schema:
+          $ref: '#/definitions/booking.ProviderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Provider created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create provider
+      tags:
+      - provider
+  /provider/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a provider by ID
+      parameters:
+      - description: Provider ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Provider deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid provider ID
+          schema:
+            type: string
+        "404":
+          description: Provider not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete provider
+      tags:
+      - provider
+    get:
+      consumes:
+      - application/json
+      description: Get a provider
+      parameters:
+      - description: Provider ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ProviderGetByIdRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get provider
+      tags:
+      - provider
+    put:
+      consumes:
+      - application/json
+      description: Update an existing provider
+      parameters:
+      - description: Provider data
+        in: body
+        name: provider
+        required: true
+        schema:
+          $ref: '#/definitions/booking.ProviderCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Provider updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Provider not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update provider
+      tags:
+      - provider
+  /provider/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all provider
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Rating
+        in: query
+        name: rating
+        type: number
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ProviderGetAllRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all provider
+      tags:
+      - provider
+  /provider/review:
+    post:
+      consumes:
+      - application/json
+      description: Create a new review
+      parameters:
+      - description: Review data
+        in: body
+        name: review
+        required: true
+        schema:
+          $ref: '#/definitions/booking.ReviewCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create review
+      tags:
+      - review
+  /provider/review/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a review
+      parameters:
+      - description: Review ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ReviewGetByIdRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get review
+      tags:
+      - review
+    put:
+      consumes:
+      - application/json
+      description: Update an existing review
+      parameters:
+      - description: Id
+        in: query
+        name: id
+        type: string
+      - description: Comment
+        in: query
+        name: comment
+        type: string
+      - description: Rating
+        in: query
+        name: rating
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Review not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update review
+      tags:
+      - review
+  /provider/review/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all review
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: ProviderId
+        in: query
+        name: provider_id
+        type: string
+      - description: UserId
+        in: query
+        name: user_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ReviewGetAllRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all review
+      tags:
+      - review
+  /provider/service:
+    post:
+      consumes:
+      - application/json
+      description: Create a new provider
+      parameters:
+      - description: ServiceId
+        in: query
+        name: service_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Provider created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create provider
+      tags:
+      - provider
+  /provider/service/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a provider by ID
+      parameters:
+      - description: Provider ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Provider deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid provider ID
+          schema:
+            type: string
+        "404":
+          description: Provider not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete provider
+      tags:
+      - provider
+    get:
+      consumes:
+      - application/json
+      description: Get a provider
+      parameters:
+      - description: Provider ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ProviderServiceGetByIdRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get provider
+      tags:
+      - provider
+  /provider/service/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all provider
+      parameters:
+      - description: ProviderId
+        in: query
+        name: provider_id
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ProviderServiceGetAllRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all provider
+      tags:
+      - provider
+  /service:
+    post:
+      consumes:
+      - application/json
+      description: Create a new service
+      parameters:
+      - description: Service data
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/booking.ServiceCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service created
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create service
+      tags:
+      - service
+  /service/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a service by ID
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service deleted
+          schema:
+            type: string
+        "400":
+          description: Invalid provider ID
+          schema:
+            type: string
+        "404":
+          description: Service not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete service
+      tags:
+      - service
+    get:
+      consumes:
+      - application/json
+      description: Get a service
+      parameters:
+      - description: Service ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ServiceGetByIdRes'
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get service
+      tags:
+      - service
+    put:
+      consumes:
+      - application/json
+      description: Update an existing service
+      parameters:
+      - description: Id
+        in: query
+        name: id
+        type: string
+      - description: Service data
+        in: body
+        name: service
+        required: true
+        schema:
+          $ref: '#/definitions/booking.ServiceCreateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Service updated
+          schema:
+            type: string
+        "400":
+          description: Invalid request payload
+          schema:
+            type: string
+        "404":
+          description: Service not found
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update service
+      tags:
+      - service
+  /service/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all service
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Price
+        in: query
+        name: price
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/booking.ServiceGetAllRes'
+        "400":
+          description: Invalid parameters
+          schema:
+            type: string
+        "500":
+          description: Server error
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get all service
+      tags:
+      - service
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

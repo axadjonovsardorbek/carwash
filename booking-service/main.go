@@ -4,6 +4,7 @@ import (
 	cf "booking/config"
 	bp "booking/genproto/booking"
 	"booking/service"
+	"booking/storage/mongo"
 	"booking/storage/postgres"
 	"log"
 	"net"
@@ -15,6 +16,12 @@ func main() {
 	config := cf.Load()
 
 	db, err := postgres.NewPostgresStorage(config)
+
+	if err != nil {
+		panic(err)
+	}
+
+	mongoConn, err := mongo.NewMongoStorage(config)
 
 	if err != nil {
 		panic(err)
@@ -34,6 +41,7 @@ func main() {
 	bp.RegisterReviewServiceServer(s, service.NewReviewService(db))
 	bp.RegisterServiceServiceServer(s, service.NewServiceService(db))
 	bp.RegisterProviderServiceServiceServer(s, service.NewProviderServiceService(db))
+	bp.RegisterNotificationServiceServer(s, service.NewNotificationService(mongoConn))
 
 	log.Printf("server listening at %v", listener.Addr())
 	if err := s.Serve(listener); err != nil {

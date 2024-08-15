@@ -197,7 +197,7 @@ func (r *PaymentRepo) Update(req *bp.PaymentUpdateReq) (*bp.Void, error) {
 func (r *PaymentRepo) Delete(req *bp.ById) (*bp.Void, error) {
 	query := `
 	UPDATE 
-		bookings
+		payments
 	SET 
 		status = 'cancelled'
 	WHERE 
@@ -224,4 +224,64 @@ func (r *PaymentRepo) Delete(req *bp.ById) (*bp.Void, error) {
 
 	log.Println("Successfully deleted payment")
 	return nil, nil
+}
+
+func (r *PaymentRepo) GetBookingId(req *bp.ById) (*bp.ById, error){
+	query := `
+	SELECT
+		booking_id
+	FROM
+		payments
+	WHERE
+		id = $1
+	AND 
+		deleted_at = 0
+	`
+
+	var id string
+
+	row := r.db.QueryRow(query, req.Id)
+
+	err := row.Scan(
+		&id,
+	)
+
+	if err != nil {
+		log.Println("Error while getting booking id: ", err)
+		return nil, err
+	}
+
+	log.Println("Successfully got booking id")
+
+	return &bp.ById{Id: id}, nil
+}
+
+func (r *PaymentRepo) GetBookingAmount(req *bp.ById) (*bp.GetAmountRes, error){
+	query := `
+	SELECT
+		price
+	FROM
+		services
+	WHERE
+		id = $1
+	AND 
+		deleted_at = 0
+	`
+
+	var price int64
+
+	row := r.db.QueryRow(query, req.Id)
+
+	err := row.Scan(
+		&price,
+	)
+
+	if err != nil {
+		log.Println("Error while getting price: ", err)
+		return nil, err
+	}
+
+	log.Println("Successfully got price")
+
+	return &bp.GetAmountRes{Amount: price}, nil
 }

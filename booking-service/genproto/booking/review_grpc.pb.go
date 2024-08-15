@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ReviewService_Create_FullMethodName  = "/booking.ReviewService/Create"
-	ReviewService_GetById_FullMethodName = "/booking.ReviewService/GetById"
-	ReviewService_GetAll_FullMethodName  = "/booking.ReviewService/GetAll"
-	ReviewService_Update_FullMethodName  = "/booking.ReviewService/Update"
-	ReviewService_Delete_FullMethodName  = "/booking.ReviewService/Delete"
+	ReviewService_Create_FullMethodName            = "/booking.ReviewService/Create"
+	ReviewService_GetById_FullMethodName           = "/booking.ReviewService/GetById"
+	ReviewService_GetAll_FullMethodName            = "/booking.ReviewService/GetAll"
+	ReviewService_Update_FullMethodName            = "/booking.ReviewService/Update"
+	ReviewService_Delete_FullMethodName            = "/booking.ReviewService/Delete"
+	ReviewService_GetProviderRating_FullMethodName = "/booking.ReviewService/GetProviderRating"
 )
 
 // ReviewServiceClient is the client API for ReviewService service.
@@ -35,6 +36,7 @@ type ReviewServiceClient interface {
 	GetAll(ctx context.Context, in *ReviewGetAllReq, opts ...grpc.CallOption) (*ReviewGetAllRes, error)
 	Update(ctx context.Context, in *ReviewUpdateReq, opts ...grpc.CallOption) (*Void, error)
 	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error)
+	GetProviderRating(ctx context.Context, in *ById, opts ...grpc.CallOption) (*GetProviderRatingRes, error)
 }
 
 type reviewServiceClient struct {
@@ -90,6 +92,15 @@ func (c *reviewServiceClient) Delete(ctx context.Context, in *ById, opts ...grpc
 	return out, nil
 }
 
+func (c *reviewServiceClient) GetProviderRating(ctx context.Context, in *ById, opts ...grpc.CallOption) (*GetProviderRatingRes, error) {
+	out := new(GetProviderRatingRes)
+	err := c.cc.Invoke(ctx, ReviewService_GetProviderRating_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReviewServiceServer is the server API for ReviewService service.
 // All implementations must embed UnimplementedReviewServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type ReviewServiceServer interface {
 	GetAll(context.Context, *ReviewGetAllReq) (*ReviewGetAllRes, error)
 	Update(context.Context, *ReviewUpdateReq) (*Void, error)
 	Delete(context.Context, *ById) (*Void, error)
+	GetProviderRating(context.Context, *ById) (*GetProviderRatingRes, error)
 	mustEmbedUnimplementedReviewServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedReviewServiceServer) Update(context.Context, *ReviewUpdateReq
 }
 func (UnimplementedReviewServiceServer) Delete(context.Context, *ById) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedReviewServiceServer) GetProviderRating(context.Context, *ById) (*GetProviderRatingRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProviderRating not implemented")
 }
 func (UnimplementedReviewServiceServer) mustEmbedUnimplementedReviewServiceServer() {}
 
@@ -224,6 +239,24 @@ func _ReviewService_Delete_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReviewService_GetProviderRating_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ById)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReviewServiceServer).GetProviderRating(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReviewService_GetProviderRating_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReviewServiceServer).GetProviderRating(ctx, req.(*ById))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReviewService_ServiceDesc is the grpc.ServiceDesc for ReviewService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var ReviewService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _ReviewService_Delete_Handler,
+		},
+		{
+			MethodName: "GetProviderRating",
+			Handler:    _ReviewService_GetProviderRating_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

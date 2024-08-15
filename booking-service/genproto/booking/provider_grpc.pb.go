@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	ProviderService_Create_FullMethodName  = "/booking.ProviderService/Create"
-	ProviderService_GetById_FullMethodName = "/booking.ProviderService/GetById"
-	ProviderService_GetAll_FullMethodName  = "/booking.ProviderService/GetAll"
-	ProviderService_Update_FullMethodName  = "/booking.ProviderService/Update"
-	ProviderService_Delete_FullMethodName  = "/booking.ProviderService/Delete"
+	ProviderService_Create_FullMethodName        = "/booking.ProviderService/Create"
+	ProviderService_GetById_FullMethodName       = "/booking.ProviderService/GetById"
+	ProviderService_GetAll_FullMethodName        = "/booking.ProviderService/GetAll"
+	ProviderService_Update_FullMethodName        = "/booking.ProviderService/Update"
+	ProviderService_Delete_FullMethodName        = "/booking.ProviderService/Delete"
+	ProviderService_GetProviderId_FullMethodName = "/booking.ProviderService/GetProviderId"
 )
 
 // ProviderServiceClient is the client API for ProviderService service.
@@ -35,6 +36,7 @@ type ProviderServiceClient interface {
 	GetAll(ctx context.Context, in *ProviderGetAllReq, opts ...grpc.CallOption) (*ProviderGetAllRes, error)
 	Update(ctx context.Context, in *ProviderUpdateReq, opts ...grpc.CallOption) (*Void, error)
 	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error)
+	GetProviderId(ctx context.Context, in *ById, opts ...grpc.CallOption) (*ById, error)
 }
 
 type providerServiceClient struct {
@@ -90,6 +92,15 @@ func (c *providerServiceClient) Delete(ctx context.Context, in *ById, opts ...gr
 	return out, nil
 }
 
+func (c *providerServiceClient) GetProviderId(ctx context.Context, in *ById, opts ...grpc.CallOption) (*ById, error) {
+	out := new(ById)
+	err := c.cc.Invoke(ctx, ProviderService_GetProviderId_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProviderServiceServer is the server API for ProviderService service.
 // All implementations must embed UnimplementedProviderServiceServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type ProviderServiceServer interface {
 	GetAll(context.Context, *ProviderGetAllReq) (*ProviderGetAllRes, error)
 	Update(context.Context, *ProviderUpdateReq) (*Void, error)
 	Delete(context.Context, *ById) (*Void, error)
+	GetProviderId(context.Context, *ById) (*ById, error)
 	mustEmbedUnimplementedProviderServiceServer()
 }
 
@@ -120,6 +132,9 @@ func (UnimplementedProviderServiceServer) Update(context.Context, *ProviderUpdat
 }
 func (UnimplementedProviderServiceServer) Delete(context.Context, *ById) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedProviderServiceServer) GetProviderId(context.Context, *ById) (*ById, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetProviderId not implemented")
 }
 func (UnimplementedProviderServiceServer) mustEmbedUnimplementedProviderServiceServer() {}
 
@@ -224,6 +239,24 @@ func _ProviderService_Delete_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProviderService_GetProviderId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ById)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProviderServiceServer).GetProviderId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ProviderService_GetProviderId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProviderServiceServer).GetProviderId(ctx, req.(*ById))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProviderService_ServiceDesc is the grpc.ServiceDesc for ProviderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +283,10 @@ var ProviderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _ProviderService_Delete_Handler,
+		},
+		{
+			MethodName: "GetProviderId",
+			Handler:    _ProviderService_GetProviderId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

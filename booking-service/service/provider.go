@@ -30,3 +30,7 @@ func (s *ProviderService) Update(ctx context.Context, req *bp.ProviderUpdateReq)
 func (s *ProviderService) Delete(ctx context.Context, req *bp.ById) (*bp.Void, error) {
 	return s.storage.ProviderS.Delete(req)
 }
+
+func (s *ProviderService) GetProviderId(ctx context.Context, req *bp.ById) (*bp.ById, error) {
+	return s.storage.ProviderS.GetProviderId(req)
+}

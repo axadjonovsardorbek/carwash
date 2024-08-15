@@ -251,3 +251,33 @@ func (r *ProviderRepo) Delete(req *bp.ById) (*bp.Void, error) {
 
 	return nil, nil
 }
+
+func (r *ProviderRepo) GetProviderId(req *bp.ById) (*bp.ById, error){
+	query := `
+	SELECT
+		id
+	FROM
+		providers
+	WHERE
+		user_id = $1
+	AND 
+		deleted_at = 0
+	`
+
+	var id string
+
+	row := r.db.QueryRow(query, req.Id)
+
+	err := row.Scan(
+		&id,
+	)
+
+	if err != nil {
+		log.Println("Error while getting provider id: ", err)
+		return nil, err
+	}
+
+	log.Println("Successfully got provider id")
+
+	return &bp.ById{Id: id}, nil
+}

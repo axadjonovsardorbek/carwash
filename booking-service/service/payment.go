@@ -30,3 +30,9 @@ func (s *PaymentService) Update(ctx context.Context, req *bp.PaymentUpdateReq) (
 func (s *PaymentService) Delete(ctx context.Context, req *bp.ById) (*bp.Void, error) {
 	return s.storage.PaymentS.Delete(req)
 }
+func (s *PaymentService) GetBookingId(ctx context.Context, req *bp.ById) (*bp.ById, error){
+	return s.storage.PaymentS.GetBookingId(req)
+}
+func (s *PaymentService) GetBookingAmount(ctx context.Context, req *bp.ById) (*bp.GetAmountRes, error){
+	return s.storage.PaymentS.GetBookingAmount(req)
+}
