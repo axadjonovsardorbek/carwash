@@ -64,7 +64,7 @@ func (h *Handler) AdminRegister(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	err = h.Producer.ProduceMessages("admin-create", input)
+	err = h.Producer.ProduceMessages("create", input)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -114,7 +114,7 @@ func (h *Handler) UserRegister(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	err = h.Producer.ProduceMessages("user-create", input)
+	err = h.Producer.ProduceMessages("create", input)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -172,7 +172,7 @@ func (h *Handler) ProviderRegister(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	err = h.Producer.ProduceMessages("provider-create", input)
+	err = h.Producer.ProduceMessages("create", input)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
