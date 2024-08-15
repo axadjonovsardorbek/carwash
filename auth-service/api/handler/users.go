@@ -3,7 +3,6 @@ package handler
 import (
 	ap "auth/genproto/auth"
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
