@@ -19,7 +19,7 @@ INSERT INTO provider_services (id, user_id, service_id, provider_id, created_at,
 ('82b326b7-e316-4e0f-9f7f-4066364ec04c', '91cf6e44-d61a-4e81-8516-f906ef8c53f9', '11a9c6f4-2b7a-43e1-97a3-72a2f1e2b2e1', '47c7a789-73fe-4bba-87c8-7e75a1b642e4', '2024-08-13 13:39:43.540641+05', '2024-08-13 13:39:43.540641+05', 0),
 ('828d3e0f-70e9-4cf6-8a32-3686164151cd', '91cf6e44-d61a-4e81-8516-f906ef8c53f9', '22b0d7f5-3c8b-54f2-08b4-82b3f2e3c3f2', '47c7a789-73fe-4bba-87c8-7e75a1b642e4', '2024-08-13 14:00:00.000000+05', '2024-08-13 14:00:00.000000+05', 0);
 
-INSERT INTO bookings (id, user_id, booking_id, amount, status, payment_method, created_at, updated_at, deleted_at) VALUES
+INSERT INTO bookings (id, user_id, provider_id, amount, status, payment_method, created_at, updated_at, deleted_at) VALUES
 ('c02a6b53-3309-4040-a155-0a7abcb637aa', '91cf6e44-d61a-4e81-8516-f906ef8c53e8', '47c7a789-73fe-4bba-87c8-7e75a1b642e4', 75000, 'completed', 'cash', '2024-08-15 13:13:59.168035+05', '2024-08-15 14:06:24.217561+05', 0),
 ('95fe8f04-29f2-4da9-8236-da863f320410', '91cf6e44-d61a-4e81-8516-f906ef8c53e8', '47c7a789-73fe-4bba-87c8-7e75a1b642e4', 75000, 'cancelled', 'cash', '2024-08-15 13:06:29.746293+05', '2024-08-15 13:20:08.390969+05', 0);
 
