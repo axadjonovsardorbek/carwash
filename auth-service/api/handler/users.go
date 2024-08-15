@@ -57,14 +57,14 @@ func (h *Handler) AdminRegister(c *gin.Context) {
 	}
 	req.Password = string(hashedPassword)
 
-	// _, err = h.User.Register(context.Background(), &req)
+	_, err = h.User.Register(context.Background(), &req)
 
-	input, err := json.Marshal(&req)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	err = h.Producer.ProduceMessages("create", input)
+	// input, err := json.Marshal(&req)
+	// if err != nil {
+	// 	c.JSON(500, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	// err = h.Producer.ProduceMessages("create", input)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -107,14 +107,14 @@ func (h *Handler) UserRegister(c *gin.Context) {
 	}
 	req.Password = string(hashedPassword)
 
-	// _, err = h.User.Register(context.Background(), &req)
+	_, err = h.User.Register(context.Background(), &req)
 
-	input, err := json.Marshal(&req)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	err = h.Producer.ProduceMessages("create", input)
+	// input, err := json.Marshal(&req)
+	// if err != nil {
+	// 	c.JSON(500, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	// err = h.Producer.ProduceMessages("create", input)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -165,14 +165,14 @@ func (h *Handler) ProviderRegister(c *gin.Context) {
 	}
 	req.Password = string(hashedPassword)
 
-	// _, err = h.User.Register(context.Background(), &req)
+	_, err = h.User.Register(context.Background(), &req)
 
-	input, err := json.Marshal(&req)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-	err = h.Producer.ProduceMessages("create", input)
+	// input, err := json.Marshal(&req)
+	// if err != nil {
+	// 	c.JSON(500, gin.H{"error": err.Error()})
+	// 	return
+	// }
+	// err = h.Producer.ProduceMessages("create", input)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
