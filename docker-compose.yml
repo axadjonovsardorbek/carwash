@@ -7,7 +7,7 @@ services:
       - carwash
     volumes:
       - ./auth-service/migrations:/migrations
-    command: [ "-path", "/migrations", "-database", "postgres-carwash://postgres:1111@postgres-carwash:5432/carwash?sslmode=disable", "up" ]
+    command: [ "-path", "/migrations", "-database", "postgres://postgres:1111@postgres-carwash:5432/carwash?sslmode=disable", "up" ]
     depends_on:
       - postgres-carwash
 
