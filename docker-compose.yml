@@ -60,7 +60,7 @@ services:
     container_name: carwash-gateway
     build: ./api-gateway
     depends_on:
-      - postgres
+      - postgres-db
       - booking-service
     ports:
       - "8002:8002"
