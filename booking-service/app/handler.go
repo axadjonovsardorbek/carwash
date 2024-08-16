@@ -1,4 +1,4 @@
-package kafka_handler
+package app
 
 import (
 	"context"
@@ -15,8 +15,8 @@ type KafkaHandler struct {
 	notification *service.NotificationService
 	payment      *service.PaymentService
 	provider     *service.ProviderService
+	review       *service.ReviewService
 	// provider_service        *service.ProviderServiceService
-	review *service.ReviewService
 	// service *service.ServiceService
 }
 

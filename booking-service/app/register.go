@@ -1,4 +1,4 @@
-package kafka_handler
+package app
 
 import (
 	"errors"
