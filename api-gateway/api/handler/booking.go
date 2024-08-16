@@ -240,6 +240,7 @@ func (h *Handler) BookingUpdate(c *gin.Context) {
 	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't update booking", "details": err.Error()})
 	// 	return
 	// }
+
 	data, err := protojson.Marshal(&memory)
 	if err != nil {
 		log.Println("Failed to marshal proto message", err)
@@ -257,6 +258,7 @@ func (h *Handler) BookingUpdate(c *gin.Context) {
 		UserId:  id,
 		Message: "Your book is confirmed",
 	}
+	
 	// _, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
 	// 	UserId:  id,
 	// 	Message: "Your book is confirmed",

@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // ProviderCreate handles the creation of a new provider.
@@ -53,11 +54,40 @@ func (h *Handler) ProviderCreate(c *gin.Context) {
 	req.AverageRating = 0
 	req.Location = body.Location
 
-	_, err := h.srvs.Provider.Create(context.Background(), &req)
+	// _, err := h.srvs.Provider.Create(context.Background(), &req)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	log.Println("error: ", err)
+	// 	return
+	// }
 
+	data, err := protojson.Marshal(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Println("error: ", err)
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("provider-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	notification := &cp.NotificationRes{
+		UserId:  id,
+		Message: "Your provider is added",
+	}
+	data, err = protojson.Marshal(notification)
+	if err != nil {
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("notification-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 
@@ -182,7 +212,7 @@ func (h *Handler) ProviderUpdate(c *gin.Context) {
 
 	var body cp.ProviderCreateReq
 
-	if err := c.BindJSON(&req); err != nil {
+	if err := c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
@@ -202,11 +232,42 @@ func (h *Handler) ProviderUpdate(c *gin.Context) {
 	req.Provider.AverageRating = avg_rating
 	req.Provider.Location = body.Location
 
-	_, err = h.srvs.Provider.Update(context.Background(), &req)
+	// _, err = h.srvs.Provider.Update(context.Background(), &req)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't update provider", "details": err.Error()})
+	// 	return
+	// }
+
+	data, err := protojson.Marshal(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't update provider", "details": err.Error()})
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
+
+	if err := h.Producer.ProduceMessages("provider-update", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	notification := &cp.NotificationRes{
+		UserId:  user_id,
+		Message: "Your provider is updated",
+	}
+	data, err = protojson.Marshal(notification)
+	if err != nil {
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("notification-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Provider updated"})
 }
 
@@ -231,6 +292,7 @@ func (h *Handler) ProviderDelete(c *gin.Context) {
 	}
 
 	role := claims.(jwt.MapClaims)["role"].(string)
+	user_id := claims.(jwt.MapClaims)["user_id"].(string)
 
 	if role != "provider" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -243,5 +305,23 @@ func (h *Handler) ProviderDelete(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't delete provider", "details": err.Error()})
 		return
 	}
+
+	notification := &cp.NotificationRes{
+		UserId:  user_id,
+		Message: "Your provider is deleted",
+	}
+	data, err := protojson.Marshal(notification)
+	if err != nil {
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("notification-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Provider deleted"})
 }
