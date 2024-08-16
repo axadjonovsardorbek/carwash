@@ -54,13 +54,6 @@ func (h *Handler) ProviderCreate(c *gin.Context) {
 	req.AverageRating = 0
 	req.Location = body.Location
 
-	// _, err := h.srvs.Provider.Create(context.Background(), &req)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 	log.Println("error: ", err)
-	// 	return
-	// }
-
 	data, err := protojson.Marshal(&req)
 	if err != nil {
 		log.Println("Failed to marshal proto message", err)
@@ -231,12 +224,6 @@ func (h *Handler) ProviderUpdate(c *gin.Context) {
 	req.Provider.Availability = body.Availability
 	req.Provider.AverageRating = avg_rating
 	req.Provider.Location = body.Location
-
-	// _, err = h.srvs.Provider.Update(context.Background(), &req)
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't update provider", "details": err.Error()})
-	// 	return
-	// }
 
 	data, err := protojson.Marshal(&req)
 	if err != nil {

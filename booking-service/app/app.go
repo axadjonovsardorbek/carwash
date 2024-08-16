@@ -39,16 +39,12 @@ func Run(cfg config.Config) {
 		log.Fatal(err)
 	}
 
-	// create services
-
 	booking_service := service.NewBookingService(db)
 	notification_service := service.NewNotificationService(mongoConn)
 	payment_service := service.NewPaymentService(db)
 	provider_service := service.NewProviderService(db)
 	review_service := service.NewReviewService(db)
-	// service_service := service.NewServiceService(db)
 
-	//register kafka handlers
 	kafka_handler := &KafkaHandler{
 		booking:      booking_service,
 		notification: notification_service,
@@ -57,7 +53,6 @@ func Run(cfg config.Config) {
 		review:       review_service,
 	}
 
-	// register kafka handlers
 	if err := Register(kafka_handler, &cfg); err != nil {
 		log.Fatal("Error registering kafka handlers: ", err)
 	}

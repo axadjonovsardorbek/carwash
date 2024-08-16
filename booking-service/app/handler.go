@@ -16,8 +16,6 @@ type KafkaHandler struct {
 	payment      *service.PaymentService
 	provider     *service.ProviderService
 	review       *service.ReviewService
-	// provider_service        *service.ProviderServiceService
-	// service *service.ServiceService
 }
 
 func (h *KafkaHandler) BookingCreateHandler() func(message []byte) {

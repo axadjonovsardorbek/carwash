@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // ReviewCreate handles the creation of a new review.
@@ -65,11 +66,16 @@ func (h *Handler) ReviewCreate(c *gin.Context) {
 	req.Rating = body.Rating
 	req.Comment = body.Comment
 
-	_, err = h.srvs.Review.Create(context.Background(), &req)
-
+	data, err := protojson.Marshal(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Println("error: ", err)
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("review-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 

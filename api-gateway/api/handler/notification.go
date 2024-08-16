@@ -32,15 +32,6 @@ func (h *Handler) NotificationGetById(c *gin.Context) {
 		return
 	}
 
-	// _, err = h.srvs.Notification.Update(context.Background(), &cp.NotificationUpdateReq{
-	// 	IsRead: "true",
-	// 	Id: id.Id,
-	// })
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't get notification", "details": err.Error()})
-	// 	return
-	// }
-
 	notification := &cp.NotificationUpdateReq{
 		IsRead: "true",
 		Id:     id.Id,
