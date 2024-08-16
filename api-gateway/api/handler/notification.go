@@ -3,11 +3,13 @@ package handler
 import (
 	"context"
 	cp "gateway/genproto/booking"
+	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // NotificationGetById handles the get a notification.
@@ -30,12 +32,30 @@ func (h *Handler) NotificationGetById(c *gin.Context) {
 		return
 	}
 
-	_, err = h.srvs.Notification.Update(context.Background(), &cp.NotificationUpdateReq{
+	// _, err = h.srvs.Notification.Update(context.Background(), &cp.NotificationUpdateReq{
+	// 	IsRead: "true",
+	// 	Id: id.Id,
+	// })
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't get notification", "details": err.Error()})
+	// 	return
+	// }
+
+	notification := &cp.NotificationUpdateReq{
 		IsRead: "true",
-		Id: id.Id,
-	})
+		Id:     id.Id,
+	}
+
+	data, err := protojson.Marshal(notification)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't get notification", "details": err.Error()})
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("notification-update", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 

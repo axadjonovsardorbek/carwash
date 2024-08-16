@@ -83,14 +83,31 @@ func (h *Handler) BookingCreate(c *gin.Context) {
 		return
 	}
 
-	_, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
+	notification := &cp.NotificationRes{
 		UserId:  id,
 		Message: "Your book is accepted",
-	})
+	}
+	// _, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
+	// 	UserId:  id,
+	// 	Message: "Your book is accepted",
+	// })
 
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	log.Println("error: ", err)
+	// 	return
+	// }
+
+	data, err = protojson.Marshal(notification)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Println("error: ", err)
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("notification-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 
@@ -218,20 +235,48 @@ func (h *Handler) BookingUpdate(c *gin.Context) {
 		Status: "confirmed",
 	}
 
-	_, err := h.srvs.Booking.Update(context.Background(), &memory)
+	// _, err := h.srvs.Booking.Update(context.Background(), &memory)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't update booking", "details": err.Error()})
+	// 	return
+	// }
+	data, err := protojson.Marshal(&memory)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't update booking", "details": err.Error()})
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 
-	_, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
+	if err := h.Producer.ProduceMessages("booking-update", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	notification := &cp.NotificationRes{
 		UserId:  id,
 		Message: "Your book is confirmed",
-	})
+	}
+	// _, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
+	// 	UserId:  id,
+	// 	Message: "Your book is confirmed",
+	// })
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	log.Println("error: ", err)
+	// 	return
+	// }
 
+	data, err = protojson.Marshal(notification)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Println("error: ", err)
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("notification-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 
@@ -273,14 +318,30 @@ func (h *Handler) BookingDelete(c *gin.Context) {
 		return
 	}
 
-	_, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
+	// _, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
+	// 	UserId:  user_id,
+	// 	Message: "Your book is cancelled",
+	// })
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	log.Println("error: ", err)
+	// 	return
+	// }
+	notification := &cp.NotificationRes{
 		UserId:  user_id,
 		Message: "Your book is cancelled",
-	})
+	}
 
+	data, err := protojson.Marshal(notification)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Println("error: ", err)
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("notification-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 
