@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS reviews (
 
 CREATE TABLE IF NOT EXISTS payments (
     id UUID PRIMARY KEY,
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE UNIQUE,
     booking_id UUID REFERENCES bookings(id) ON DELETE CASCADE,
     amount BIGINT NOT NULL,
     status payment_status NOT NULL DEFAULT 'pending',
@@ -124,6 +124,3 @@ ADD CONSTRAINT providers_unique_tg UNIQUE (service_id, provider_id, deleted_at);
 
 ALTER TABLE providers
 ADD CONSTRAINT provider_users_unique_tg UNIQUE (user_id, deleted_at);
-
-ALTER TABLE payments
-ADD CONSTRAINT provider_users_unique_tg UNIQUE (user_id, booking_id);
