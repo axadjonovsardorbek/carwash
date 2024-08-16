@@ -25,7 +25,7 @@ func main() {
 	}
 	defer kafka.Close()
 
-	engine := api.NewRouter(handler.NewHandler(services))
+	engine := api.NewRouter(handler.NewHandler(services, &kafka))
 
 	err = engine.Run(config.GATEWAY_PORT)
 	if err != nil {
