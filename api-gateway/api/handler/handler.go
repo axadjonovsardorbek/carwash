@@ -10,6 +10,9 @@ type Handler struct {
 	Producer kafka.KafkaProducer
 }
 
-func NewHandler(srvs *clients.GrpcClients) *Handler {
-	return &Handler{srvs: srvs}
+func NewHandler(srvs *clients.GrpcClients, producer *kafka.KafkaProducer) *Handler {
+	return &Handler{
+		srvs: srvs,
+		Producer: *producer,
+	}
 }
