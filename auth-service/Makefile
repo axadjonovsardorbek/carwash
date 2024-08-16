@@ -13,13 +13,13 @@ proto-gen:
 	./scripts/gen-proto.sh ${CURRENT_DIR}
 	
 migrate_up:
-	migrate -path migrations -database postgres://postgres:1111@localhost:5432/carwash-db?sslmode=disable -verbose up
+	migrate -path migrations -database postgres://postgres:1111@localhost:5432/carwash?sslmode=disable -verbose up
 
 migrate_down:
-	migrate -path migrations -database postgres://postgres:1111@localhost:5432/carwash-db?sslmode=disable -verbose down
+	migrate -path migrations -database postgres://postgres:1111@localhost:5432/carwash?sslmode=disable -verbose down
 
 migrate_force:
-	migrate -path migrations -database postgres://postgres:1111@localhost:5432/carwash-db?sslmode=disable -verbose force 1
+	migrate -path migrations -database postgres://postgres:1111@localhost:5432/carwash?sslmode=disable -verbose force 1
 
 migrate_file:
 	migrate create -ext sql -dir migrations -seq create_table

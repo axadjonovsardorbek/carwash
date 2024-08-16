@@ -4,27 +4,27 @@ services:
   migrate:
     image: migrate/migrate
     networks: 
-      - carwash
+      - carwash-ntwr
     volumes:
       - ./auth-service/migrations:/migrations
-    command: [ "-path", "/migrations", "-database", "postgres://postgres:1111@postgres:5432/carwash-db?sslmode=disable", "up" ]
+    command: [ "-path", "/migrations", "-database", "postgres://postgres:1111@postgres:5432/carwash?sslmode=disable", "up" ]
     depends_on:
-      - postgres
+      - postgres-db
 
-  postgres:
+  postgres-db:
     container_name: postgres
     image: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 1111
       PGDATA: /data/postgres
-      POSTGRES_DB: carwash-db
+      POSTGRES_DB: carwash
     volumes:
      - carwash_postgres_data:/var/lib/postgres/data
     ports:
       - "5432:5332"
     networks:
-      - carwash
+      - carwash-ntwr
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d postgres"]
@@ -43,18 +43,18 @@ services:
     volumes:
       - carwash_mongo_data:/data/db
     networks:
-      - carwash  
+      - carwash-ntwr
   
   booking-service:
     container_name: booking-service
     build: ./booking-service
     depends_on:
-      - postgres
+      - postgres-db
       - mongo
     ports:
       - "50010:50010"
     networks:
-      - carwash     
+      - carwash-ntwr    
     
   carwash-gateway:
     container_name: carwash-gateway
@@ -65,13 +65,13 @@ services:
     ports:
       - "8002:8002"
     networks:
-      - carwash
+      - carwash-ntwr
 
   carwash-auth:
     container_name: carwash-auth
     build: ./auth-service
     depends_on: 
-      - postgres
+      - postgres-db
       - booking-service
       - carwash-gateway
       - kafka
@@ -80,7 +80,7 @@ services:
     ports:
       - "8001:8001"
     networks:
-      - carwash
+      - carwash-ntwr
 
 
   zookeeper:
@@ -92,7 +92,7 @@ services:
     ports:
       - 22181:2181
     networks:
-      - carwash
+      - carwash-ntwr
  
   kafka:
     image: confluentinc/cp-kafka:7.4.4
@@ -102,7 +102,7 @@ services:
     ports:
       - 29092:29092
     networks:
-      - carwash
+      - carwash-ntwr
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -117,10 +117,10 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - carwash
+      - carwash-ntwr
     
 networks:
-  carwash:
+  carwash-ntwr:
     driver: bridge
 
 volumes:
