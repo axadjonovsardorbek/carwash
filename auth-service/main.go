@@ -27,7 +27,7 @@ func main() {
 	prod, err := kafka.NewKafkaProducer([]string{cf.KAFKA_HOST + cf.KAFKA_PORT})
 	kfk := kafka.NewKafkaConsumerManager()
 	broker := []string{cf.KAFKA_HOST + cf.KAFKA_PORT}
-	kfk.RegisterConsumer(broker, "user", "u", kafka.UserCreateHandler(us))
+	kfk.RegisterConsumer(broker, "create", "u", kafka.UserCreateHandler(us))
 
 	if err != nil {
 		log.Fatal(err)
