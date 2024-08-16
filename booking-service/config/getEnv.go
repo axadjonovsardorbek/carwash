@@ -22,6 +22,9 @@ type Config struct {
 	MONGO_DB_NAME string
 	MONGO_DB_USER string
 	MONGO_DB_PASS string
+
+	KAFKA_HOST string
+	KAFKA_PORT string
 }
 
 func Load() Config {
@@ -44,6 +47,9 @@ func Load() Config {
 	config.MONGO_DB_PASS = cast.ToString(coalesce("MONGO_DB_PASS", "1111"))
 	config.MONGO_DB_PORT = cast.ToInt(coalesce("MONGO_DB_PORT", 27017))
 	config.MONGO_DB_NAME = cast.ToString(coalesce("MONGO_DB_NAME", "time_capsule_db"))
+
+	config.KAFKA_HOST = cast.ToString(coalesce("KAFKA_HOST", "localhost"))
+	config.KAFKA_PORT = cast.ToString(coalesce("KAFKA_PORT", ":9092"))
 
 	return config
 }

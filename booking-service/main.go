@@ -3,6 +3,7 @@ package main
 import (
 	cf "booking/config"
 	bp "booking/genproto/booking"
+	"booking/kafka"
 	"booking/service"
 	"booking/storage/mongo"
 	"booking/storage/postgres"
@@ -32,6 +33,14 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to listen tcp: %v", err)
 	}
+
+	broker := []string{config.KAFKA_HOST + config.KAFKA_PORT}
+	kafka, err := kafka.NewKafkaProducer(broker)
+	if err != nil {
+		log.Fatalln("Failed to connect to Kafka", err)
+		return
+	}
+	defer kafka.Close()
 
 	s := grpc.NewServer()
 

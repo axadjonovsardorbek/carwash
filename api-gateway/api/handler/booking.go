@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 // BookingCreate handles the creation of a new booking.
@@ -49,7 +50,7 @@ func (h *Handler) BookingCreate(c *gin.Context) {
 	service, err := h.srvs.Service.GetById(context.Background(), &cp.ById{Id: body.ServiceId})
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error":"couldn't get service amount"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "couldn't get service amount"})
 		log.Println("error: ", err)
 		return
 	}
@@ -62,16 +63,28 @@ func (h *Handler) BookingCreate(c *gin.Context) {
 	req.Location = body.Location
 	req.TotalPrice = service.Service.Price
 
-	_, err = h.srvs.Booking.Create(context.Background(), &req)
+	// _, err = h.srvs.Booking.Create(context.Background(), &req)
 
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 	log.Println("error: ", err)
+	// 	return
+	// }
+	data, err := protojson.Marshal(&req)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		log.Println("error: ", err)
+		log.Println("Failed to marshal proto message", err)
+		c.JSON(500, "Internal server error"+err.Error())
+		return
+	}
+
+	if err := h.Producer.ProduceMessages("booking-create", data); err != nil {
+		log.Println("Failed to produce message to Kafka", err)
+		c.JSON(500, "Internal server error"+err.Error())
 		return
 	}
 
 	_, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
-		UserId: id,
+		UserId:  id,
 		Message: "Your book is accepted",
 	})
 
@@ -201,7 +214,7 @@ func (h *Handler) BookingUpdate(c *gin.Context) {
 	}
 
 	memory := cp.BookingUpdateReq{
-		Id: c.Query("id"),
+		Id:     c.Query("id"),
 		Status: "confirmed",
 	}
 
@@ -212,7 +225,7 @@ func (h *Handler) BookingUpdate(c *gin.Context) {
 	}
 
 	_, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
-		UserId: id,
+		UserId:  id,
 		Message: "Your book is confirmed",
 	})
 
@@ -261,7 +274,7 @@ func (h *Handler) BookingDelete(c *gin.Context) {
 	}
 
 	_, err = h.srvs.Notification.Create(context.Background(), &cp.NotificationRes{
-		UserId: user_id,
+		UserId:  user_id,
 		Message: "Your book is cancelled",
 	})
 

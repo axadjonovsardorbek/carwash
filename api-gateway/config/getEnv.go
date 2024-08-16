@@ -13,6 +13,9 @@ type Config struct {
 	BOOKING_PORT string
 
 	BOOKING_HOST string
+
+	KAFKA_HOST string
+	KAFKA_PORT string
 }
 
 func Load() Config {
@@ -25,6 +28,9 @@ func Load() Config {
 	config.GATEWAY_PORT = cast.ToString(coalesce("GATEWAY_PORT", ":8081"))
 	config.BOOKING_PORT = cast.ToString(coalesce("BOOKING_PORT", ":50051"))
 	config.BOOKING_HOST = cast.ToString(coalesce("BOOKING_HOST", "memory-service"))
+
+	config.KAFKA_HOST = cast.ToString(coalesce("KAFKA_HOST", "localhost"))
+	config.KAFKA_PORT = cast.ToString(coalesce("KAFKA_PORT", ":9092"))
 
 	return config
 }
