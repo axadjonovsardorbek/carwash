@@ -33,6 +33,7 @@ func (h *Handler) PaymentCreate(c *gin.Context) {
 
 	id := claims.(jwt.MapClaims)["user_id"].(string)
 	role := claims.(jwt.MapClaims)["role"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "customer" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -84,6 +85,7 @@ func (h *Handler) PaymentCreate(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  id,
 		Message: "Your payment is accepted",
+		Email:   email,
 	}
 	data, err = protojson.Marshal(notification)
 	if err != nil {
@@ -208,6 +210,7 @@ func (h *Handler) PaymentUpdate(c *gin.Context) {
 
 	user_id := claims.(jwt.MapClaims)["user_id"].(string)
 	role := claims.(jwt.MapClaims)["role"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "customer" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -237,6 +240,7 @@ func (h *Handler) PaymentUpdate(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  user_id,
 		Message: "Your payment is completed",
+		Email:   email,
 	}
 	data, err = protojson.Marshal(notification)
 	if err != nil {
@@ -281,6 +285,7 @@ func (h *Handler) PaymentUpdate(c *gin.Context) {
 	notification = &cp.NotificationRes{
 		UserId:  user_id,
 		Message: "Your book is completed",
+		Email:   email,
 	}
 	data, err = protojson.Marshal(notification)
 	if err != nil {
@@ -320,6 +325,7 @@ func (h *Handler) PaymentDelete(c *gin.Context) {
 
 	user_id := claims.(jwt.MapClaims)["user_id"].(string)
 	role := claims.(jwt.MapClaims)["role"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "customer" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -336,6 +342,7 @@ func (h *Handler) PaymentDelete(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  user_id,
 		Message: "Your payment is cancelled",
+		Email:   email,
 	}
 	data, err := protojson.Marshal(notification)
 	if err != nil {
@@ -358,7 +365,7 @@ func (h *Handler) PaymentDelete(c *gin.Context) {
 
 	booking := &cp.BookingUpdateReq{
 		Id:     booking_id.Id,
-		Status: "completed",
+		Status: "cancelled",
 	}
 	data, err = protojson.Marshal(booking)
 	if err != nil {
@@ -375,7 +382,8 @@ func (h *Handler) PaymentDelete(c *gin.Context) {
 
 	notification = &cp.NotificationRes{
 		UserId:  user_id,
-		Message: "Your book is completed",
+		Message: "Your book is cancelled",
+		Email:   email,
 	}
 	data, err = protojson.Marshal(notification)
 	if err != nil {

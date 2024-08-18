@@ -18,7 +18,7 @@ type Tokens struct {
 	RefreshToken string `json:"refresh_token"`
 }
 
-func GenerateJWTToken(userID string, email string, username string) *Tokens {
+func GenerateJWTToken(userID string, email string, username string, role string) *Tokens {
 	accessToken := jwt.New(jwt.SigningMethodHS256)
 	refreshToken := jwt.New(jwt.SigningMethodHS256)
 
@@ -26,8 +26,9 @@ func GenerateJWTToken(userID string, email string, username string) *Tokens {
 	claims["user_id"] = userID
 	claims["email"] = email
 	claims["username"] = username
+	claims["role"] = role
 	claims["iat"] = time.Now().Unix()
-	claims["exp"] = time.Now().Add(180 * time.Minute).Unix() // Token expires in 3 minutes
+	claims["exp"] = time.Now().Add(60 * time.Minute).Unix() // Token expires in 1 hours
 	access, err := accessToken.SignedString([]byte(signingKey))
 	if err != nil {
 		log.Fatal("error while generating access token : ", err)
@@ -37,6 +38,7 @@ func GenerateJWTToken(userID string, email string, username string) *Tokens {
 	rftClaims["user_id"] = userID
 	rftClaims["email"] = email
 	rftClaims["username"] = username
+	rftClaims["role"] = role
 	rftClaims["iat"] = time.Now().Unix()
 	rftClaims["exp"] = time.Now().Add(24 * time.Hour).Unix() // Refresh token expires in 24 hours
 	refresh, err := refreshToken.SignedString([]byte(signingKey))

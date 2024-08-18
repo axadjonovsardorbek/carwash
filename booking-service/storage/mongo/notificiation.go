@@ -2,8 +2,10 @@ package mongo
 
 import (
 	bp "booking/genproto/booking"
+	"booking/notification"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -35,7 +37,21 @@ func (r *NotificationRepo) Create(req *bp.NotificationRes) (*bp.Void, error) {
 		return nil, err
 	}
 
+	from := "axadjonovsardorbeck@gmail.com"
+	password := "ypuw yybh sqjr boww"
+	err = notification.SendNotication(notification.Params{
+		From:     from,
+		Password: password,
+		To:       req.Email,
+		Message:  fmt.Sprintf("Hi %s, Message: %s", req.Email, req.Message),
+	})
+
+	if err != nil {
+		return nil, errors.New("failed to send verification email: " + err.Error())
+	}
+
 	log.Println("Successfully created notification")
+
 	return nil, nil
 }
 
@@ -68,7 +84,7 @@ func (r *NotificationRepo) GetAll(req *bp.NotificationGetAllReq) (*bp.Notificati
 	}
 
 	var defaultLimit int64 = 10
-	var offset int64 = int64(req.Filter.Page - 1) * defaultLimit
+	var offset int64 = int64(req.Filter.Page-1) * defaultLimit
 
 	findOptions := options.Find()
 	findOptions.SetLimit(defaultLimit)

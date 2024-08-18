@@ -33,6 +33,7 @@ func (h *Handler) ProviderCreate(c *gin.Context) {
 
 	id := claims.(jwt.MapClaims)["user_id"].(string)
 	role := claims.(jwt.MapClaims)["role"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "provider" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -70,6 +71,7 @@ func (h *Handler) ProviderCreate(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  id,
 		Message: "Your provider is added",
+		Email:   email,
 	}
 	data, err = protojson.Marshal(notification)
 	if err != nil {
@@ -192,6 +194,7 @@ func (h *Handler) ProviderUpdate(c *gin.Context) {
 
 	role := claims.(jwt.MapClaims)["role"].(string)
 	user_id := claims.(jwt.MapClaims)["user_id"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "provider" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -241,6 +244,7 @@ func (h *Handler) ProviderUpdate(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  user_id,
 		Message: "Your provider is updated",
+		Email:   email,
 	}
 	data, err = protojson.Marshal(notification)
 	if err != nil {
@@ -280,6 +284,7 @@ func (h *Handler) ProviderDelete(c *gin.Context) {
 
 	role := claims.(jwt.MapClaims)["role"].(string)
 	user_id := claims.(jwt.MapClaims)["user_id"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "provider" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -296,6 +301,7 @@ func (h *Handler) ProviderDelete(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  user_id,
 		Message: "Your provider is deleted",
+		Email:   email,
 	}
 	data, err := protojson.Marshal(notification)
 	if err != nil {

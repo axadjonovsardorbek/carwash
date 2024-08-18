@@ -33,6 +33,7 @@ func (h *Handler) BookingCreate(c *gin.Context) {
 
 	id := claims.(jwt.MapClaims)["user_id"].(string)
 	role := claims.(jwt.MapClaims)["role"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "customer" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -79,6 +80,7 @@ func (h *Handler) BookingCreate(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  id,
 		Message: "Your book is accepted",
+		Email:   email,
 	}
 
 	data, err = protojson.Marshal(notification)
@@ -207,6 +209,7 @@ func (h *Handler) BookingUpdate(c *gin.Context) {
 
 	id := claims.(jwt.MapClaims)["user_id"].(string)
 	role := claims.(jwt.MapClaims)["role"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "customer" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -234,6 +237,7 @@ func (h *Handler) BookingUpdate(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  id,
 		Message: "Your book is confirmed",
+		Email:   email,
 	}
 
 	data, err = protojson.Marshal(notification)
@@ -274,6 +278,7 @@ func (h *Handler) BookingDelete(c *gin.Context) {
 
 	role := claims.(jwt.MapClaims)["role"].(string)
 	user_id := claims.(jwt.MapClaims)["user_id"].(string)
+	email := claims.(jwt.MapClaims)["email"].(string)
 
 	if role != "customer" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "This page forbidden for you"})
@@ -290,6 +295,7 @@ func (h *Handler) BookingDelete(c *gin.Context) {
 	notification := &cp.NotificationRes{
 		UserId:  user_id,
 		Message: "Your book is cancelled",
+		Email:   email,
 	}
 
 	data, err := protojson.Marshal(notification)
